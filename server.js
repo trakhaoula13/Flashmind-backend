@@ -6,7 +6,12 @@ const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+// CLIENT_URL : une ou plusieurs origines séparées par des virgules (sans "/" final)
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json({ limit: '5mb' }));
 
 app.get('/api/health', (req, res) => res.json({ ok: true, service: 'flashmind-api' }));
